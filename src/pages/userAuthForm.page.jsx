@@ -1,21 +1,29 @@
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import InputBox from "../components/input.component";
 import googleIcon from "../imgs/google.png";
 import AnimationWrapper from "../common/page-animation";
 import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
+import { storeInSession } from "../common/session";
+import { useContext } from "react";
+import { UserContext } from "../App";
 
 let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
 
 const UserAuthForm = ({ type }) => {
+  let { userAuth, setUserAuth } = useContext(UserContext);
+
+  // console.log(userAuth);
+
   const userAuthThroughServer = async (serverRoute, formData) => {
     try {
       const { data } = await axios.post(
         `${import.meta.env.VITE_SERVER_DOMAIN}${serverRoute}`,
         formData
       );
-      console.log(data);
+      storeInSession("userDetails", JSON.stringify(data));
+      setUserAuth(data);
     } catch (error) {
       toast.error(
         error.response?.data?.message || error.message || "An error occurred"
@@ -53,7 +61,9 @@ const UserAuthForm = ({ type }) => {
     userAuthThroughServer(serverRoute, formData);
   };
 
-  return (
+  return userAuth?.data?.accessToken ? (
+    <Navigate to="/" />
+  ) : (
     <AnimationWrapper keyValue={type}>
       <section className="h-cover flex items-center justify-center">
         <Toaster />
