@@ -48,7 +48,7 @@ const Navbar = () => {
             <p>write</p>
           </Link>
 
-          {userAuth?.data?.accessToken ? (
+          {userAuth?.data?.accessToken || userAuth?.data?.user?.google_auth ? (
             <>
               <Link to="/dashboard/notification">
                 <button className="w-12 h-12 rounded-full mt-1 bg-grey relative hover:bg-black/10">
@@ -69,7 +69,7 @@ const Navbar = () => {
                   <img
                     className="w-full h-full object-cover rounded-full mt-1"
                     src={userAuth?.data?.user?.personal_info?.profile_img}
-                    alt=""
+                    alt="profile"
                   />
                 </button>
                 {userNavPanel ? <UserNavigationPanel /> : ""}

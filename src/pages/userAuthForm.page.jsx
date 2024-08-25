@@ -7,6 +7,7 @@ import axios from "axios";
 import { storeInSession } from "../common/session";
 import { useContext } from "react";
 import { UserContext } from "../App";
+import { authWithGoogle } from "../common/firebase";
 
 let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
@@ -14,7 +15,7 @@ let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
 const UserAuthForm = ({ type }) => {
   let { userAuth, setUserAuth } = useContext(UserContext);
 
-  console.log(userAuth);
+  // console.log(userAuth);
 
   const userAuthThroughServer = async (serverRoute, formData) => {
     try {
@@ -26,7 +27,8 @@ const UserAuthForm = ({ type }) => {
       setUserAuth(data);
     } catch (error) {
       toast.error(
-        error.response?.data?.message || error.message || "An error occurred"
+        // error.response?.data?.message || error.message || "An error occurred"
+        "User Details Not found"
       );
     }
   };
@@ -61,7 +63,23 @@ const UserAuthForm = ({ type }) => {
     userAuthThroughServer(serverRoute, formData);
   };
 
-  return userAuth?.data?.accessToken ? (
+  const handleGoogleAuth = async (e) => {
+    e.preventDefault();
+    try {
+      const user = await authWithGoogle();
+      let serverRoute = "/google-auth";
+
+      let formData = {
+        accessToken: user.accessToken,
+      };
+      userAuthThroughServer(serverRoute, formData);
+    } catch (error) {
+      toast.error("trouble loginw ith google");
+      console.log(error);
+    }
+  };
+
+  return userAuth?.data?.accessToken || userAuth?.data?.user?.google_auth ? (
     <Navigate to="/" />
   ) : (
     <AnimationWrapper keyValue={type}>
@@ -106,6 +124,7 @@ const UserAuthForm = ({ type }) => {
           <button
             className="btn-dark flex items-center justify-center gap-4 center w-[90%]"
             type="button"
+            onClick={handleGoogleAuth}
           >
             <img src={googleIcon} className="w-5 " alt="" />
             Continue with Google
