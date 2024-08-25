@@ -2,11 +2,16 @@ import { Link, Outlet } from "react-router-dom";
 import logo from "../imgs/logo.png";
 import { useContext, useState } from "react";
 import { UserContext } from "../App";
+import UserNavigationPanel from "./user-navigation.component";
 const Navbar = () => {
   const [searchBoxVisibility, setSearchBoxVisibility] = useState(false);
+  const [userNavPanel, setUserNavPanel] = useState(false);
+  const handleUserNavPanel = () => {
+    setUserNavPanel(!userNavPanel);
+  };
 
   const { userAuth } = useContext(UserContext);
-  const { searchBox } = useState();
+  // console.log(userAuth?.data?.user?.personal_info?.profile_img);
   return (
     <>
       <nav className="navbar">
@@ -44,7 +49,32 @@ const Navbar = () => {
           </Link>
 
           {userAuth?.data?.accessToken ? (
-            "user logged In"
+            <>
+              <Link to="/dashboard/notification">
+                <button className="w-12 h-12 rounded-full mt-1 bg-grey relative hover:bg-black/10">
+                  <i className="fi fi-rr-bell"></i>
+                </button>
+              </Link>
+
+              <div
+                className="relative"
+                onClick={handleUserNavPanel}
+                onBlur={() =>
+                  setTimeout(() => {
+                    setUserNavPanel(false);
+                  }, 700)
+                }
+              >
+                <button className="w-12 h-12 mt-1">
+                  <img
+                    className="w-full h-full object-cover rounded-full mt-1"
+                    src={userAuth?.data?.user?.personal_info?.profile_img}
+                    alt=""
+                  />
+                </button>
+                {userNavPanel ? <UserNavigationPanel /> : ""}
+              </div>
+            </>
           ) : (
             <>
               <Link className="btn-dark py-2" to="/signin">

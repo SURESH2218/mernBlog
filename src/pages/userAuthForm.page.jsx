@@ -14,7 +14,7 @@ let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
 const UserAuthForm = ({ type }) => {
   let { userAuth, setUserAuth } = useContext(UserContext);
 
-  // console.log(userAuth);
+  console.log(userAuth);
 
   const userAuthThroughServer = async (serverRoute, formData) => {
     try {
