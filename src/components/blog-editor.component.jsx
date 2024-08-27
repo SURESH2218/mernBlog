@@ -70,23 +70,22 @@ const BlogEditor = () => {
   };
 
   const handlePublish = async () => {
-    // if (!banner.length) {
-    //   return toast.error("Upload a banner to publish it");
-    // }
-    // if (textEditor.isReady) {
-    try {
-      const data = await textEditor.save();
-      // if (data.blocks.length) {
-      setBlog({ ...blog, content: data });
-      setEditorState("publish");
-    } catch (error) {
-      // else {
-      //   toast.error("Write something in your blog to publish it");
-      // }
-      // }
-      console.log(error);
+    if (!banner.length) {
+      return toast.error("Upload a banner to publish it");
     }
-    // }
+    if (textEditor.isReady) {
+      try {
+        const data = await textEditor.save();
+        if (data.blocks.length) {
+          setBlog({ ...blog, content: data });
+          setEditorState("publish");
+        } else {
+          toast.error("Write something in your blog to publish it");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
   return (
