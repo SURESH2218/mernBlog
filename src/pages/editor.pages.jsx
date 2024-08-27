@@ -18,23 +18,29 @@ export const Editorcontext = createContext({});
 
 const Editor = () => {
   const [blog, setBlog] = useState(blogStructure);
-
   const [editorState, setEditorState] = useState("editor");
+  const [textEditor, setTextEditor] = useState({ isReady: false });
   let { userAuth } = useContext(UserContext);
   //   console.log(userAuth);
-
   //   console.log(userAuth?.data?.user?.google_auth);
 
   return (
     <Editorcontext.Provider
-      value={{ blog, setBlog, editorState, setEditorState }}
+      value={{
+        blog,
+        setBlog,
+        editorState,
+        setEditorState,
+        textEditor,
+        setTextEditor,
+      }}
     >
       {userAuth?.accessToken === null ? (
         <Navigate to="/signin" />
       ) : editorState == "editor" ? (
-        <BlogEditor />
+        <BlogEditor clasName="no-scrollbar" />
       ) : (
-        <PublishForm />
+        <PublishForm clasName="no-scrollbar" />
       )}
     </Editorcontext.Provider>
   );

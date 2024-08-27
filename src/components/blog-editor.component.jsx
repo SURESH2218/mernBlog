@@ -3,7 +3,7 @@ import logo from "../imgs/logo.png";
 import AnimationWrapper from "../common/page-animation";
 import defaultBanner from "../imgs/blog banner.png";
 import uploadImage from "../common/aws";
-import { useContext, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { Toaster, toast } from "react-hot-toast";
 import { Editorcontext } from "../pages/editor.pages";
 import EditorJS from "@editorjs/editorjs";
@@ -14,15 +14,21 @@ const BlogEditor = () => {
     blog,
     blog: { title, banner, content, tags, author, desc },
     setBlog,
+    textEditor,
+    editorState,
+    setEditorState,
+    setTextEditor,
   } = useContext(Editorcontext);
 
   useEffect(() => {
-    let editor = new EditorJS({
-      holder: "textEditor",
-      data: "",
-      tools:tools,
-      placeholder: "Write the Story...💭",
-    });
+    setTextEditor(
+      new EditorJS({
+        holder: "textEditor",
+        data: content,
+        tools: tools,
+        placeholder: "Write the Story...💭",
+      })
+    );
   }, []);
 
   const handleBannerUpload = async (e) => {
@@ -63,55 +69,80 @@ const BlogEditor = () => {
     img.src = defaultBanner;
   };
 
+  const handlePublish = async () => {
+    // if (!banner.length) {
+    //   return toast.error("Upload a banner to publish it");
+    // }
+    // if (textEditor.isReady) {
+    try {
+      const data = await textEditor.save();
+      // if (data.blocks.length) {
+      setBlog({ ...blog, content: data });
+      setEditorState("publish");
+    } catch (error) {
+      // else {
+      //   toast.error("Write something in your blog to publish it");
+      // }
+      // }
+      console.log(error);
+    }
+    // }
+  };
+
   return (
-    <>
-      <nav className="navbar">
-        <Link to="/" className="flex-none w-10">
-          <img src={logo} alt="" />
-        </Link>
-        <p className="hidden sm:block text-black line-clamp-1 w-full">
-          {title.length ? title : "New Blog"}
-        </p>
-        <div className="flex gap-4 ml-auto">
-          <button className="btn-dark py-2">Publish</button>
-          <button className="btn-light py-2">Save Draft</button>
-        </div>
-      </nav>
-      <Toaster />
-      <AnimationWrapper>
-        <section>
-          <div className="mx-auto max-w-[900px] w-full">
-            <div className="relative aspect-video bg-white border-4 border-grey hover:opacity-80">
-              <label htmlFor="uploadBanner">
-                <img
-                  src={banner}
-                  onError={handleError}
-                  className="object-cover"
-                />
-                <input
-                  type="file"
-                  id="uploadBanner"
-                  accept=".png, .jpg, .jpeg"
-                  hidden
-                  onChange={handleBannerUpload}
-                />
-              </label>
-            </div>
-
-            <textarea
-              placeholder="Blog Title"
-              className="text-4xl font-medium w-full h-20 outline-none resize-none mt-10 placeholder:opacity-60 leading-tight scrollbar"
-              onKeyDown={handleTitleKeyDown}
-              onChange={handleTitleChange}
-            ></textarea>
-
-            <hr className="w-full opacity-20 my-5" />
-
-            <div id="textEditor" className="font-gelasio"></div>
+    <React.Fragment>
+      <div className="no-scrollbar overflow-auto h-screen">
+        <nav className="navbar">
+          <Link to="/" className="flex-none w-10">
+            <img src={logo} alt="" />
+          </Link>
+          <p className="hidden sm:block text-black line-clamp-1 w-full">
+            {title.length ? title : "New Blog"}
+          </p>
+          <div className="flex gap-4 ml-auto">
+            <button className="btn-dark py-2" onClick={handlePublish}>
+              Publish
+            </button>
+            <button className="btn-light py-2">Save Draft</button>
           </div>
-        </section>
-      </AnimationWrapper>
-    </>
+        </nav>
+        <Toaster />
+        <AnimationWrapper>
+          <section>
+            <div className="mx-auto max-w-[900px] w-full">
+              <div className="relative aspect-video bg-white border-4 border-grey hover:opacity-80">
+                <label htmlFor="uploadBanner">
+                  <img
+                    src={banner}
+                    onError={handleError}
+                    className="object-cover"
+                  />
+                  <input
+                    type="file"
+                    id="uploadBanner"
+                    accept=".png, .jpg, .jpeg"
+                    hidden
+                    onChange={handleBannerUpload}
+                  />
+                </label>
+              </div>
+
+              <textarea
+                defaultValue={title}
+                placeholder="Blog Title"
+                className="text-4xl font-medium w-full h-20 outline-none resize-none mt-10 placeholder:opacity-60 leading-tight scrollbar"
+                onKeyDown={handleTitleKeyDown}
+                onChange={handleTitleChange}
+              ></textarea>
+
+              <hr className="w-full opacity-20 my-5" />
+
+              <div id="textEditor" className="font-gelasio"></div>
+            </div>
+          </section>
+        </AnimationWrapper>
+      </div>
+    </React.Fragment>
   );
 };
 

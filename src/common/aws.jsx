@@ -12,7 +12,7 @@ const uploadImage = async (img) => {
         data: img,
       }).then(() => {
         imgUrl = uploadURL.split("?")[0];
-        console.log(imgUrl);
+        // console.log(imgUrl);
       });
     });
   return imgUrl;

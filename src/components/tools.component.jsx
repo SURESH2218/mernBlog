@@ -6,6 +6,34 @@ import LinkTool from "@editorjs/link";
 import List from "@editorjs/list";
 import Marker from "@editorjs/marker";
 import Quote from "@editorjs/quote";
+import uploadImage from "../common/aws";
+
+const uploadImageByUrl = (e) => {
+  let link = new Promise((resolve, reject) => {
+    try {
+      resolve(e);
+    } catch (error) {
+      reject(error);
+    }
+  });
+  return link.then((url) => {
+    return {
+      success: 1,
+      file: { url },
+    };
+  });
+};
+
+const uploadImageByFile = (e) => {
+  return uploadImage(e).then((url) => {
+    if (url) {
+      return {
+        success: 1,
+        file: { url },
+      };
+    }
+  });
+};
 
 export const tools = {
   embed: Embed,
@@ -14,8 +42,16 @@ export const tools = {
     inlineToolbar: true,
   },
   marker: Marker,
-  quote: Quote,
-  image: Image,
+  quote: { class: Quote, inlineToolbar: true },
+  image: {
+    class: Image,
+    config: {
+      uploader: {
+        uploadByUrl: uploadImageByUrl,
+        uploadByFile: uploadImageByFile,
+      },
+    },
+  },
   inlincode: InlineCode,
   header: {
     class: Header,
