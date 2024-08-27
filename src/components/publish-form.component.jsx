@@ -39,7 +39,7 @@ const PublishForm = () => {
         <section className="w-screen min-h-screen grid items-center lg:grid-cols-2 py-16 lg:gap-4">
           <Toaster />
           <button
-            className="w-12 h-12 absolute right-[5vw] z-10 top-[5%] lg:top-[10%]"
+            className="w-12 h-12 absolute right-[5vw] sm:right-[9vw] z-10 top-[1%] lg:top-[8%]"
             onClick={handleCloseEvent}
           >
             <i className="fi fi-br-cross"></i>
@@ -92,13 +92,15 @@ const PublishForm = () => {
                 onKeyDown={(e) => {
                   if (e.keyCode == 13 || e.keyCode == 188) {
                     e.preventDefault();
-                    let tag = e.target.value;
-                    if (tags.length < tagLimit) {
-                      if (!tags.includes(tag) && tag.length) {
+                    let tag = e.target.value.trim();
+                    if (!tags.includes(tag) && tag.length) {
+                      if (tags.length < tagLimit) {
                         setBlog({ ...blog, tags: [...tags, tag] });
                       } else {
-                        toast.error("You can add max 10 Tags");
+                        toast.error("You can add a maximum of 10 tags");
                       }
+                    } else if (tag.length) {
+                      toast.error("Tag already exists or is empty");
                     }
                     e.target.value = "";
                   }
@@ -111,7 +113,9 @@ const PublishForm = () => {
             <p className="mt-1 mb-4 text-dark-grey text-right">
               {tagLimit - tags.length} Tags left
             </p>
-            <button className="btn-dark px-8">Publish</button>
+            <button className="btn-dark px-8" onClick={handleData}>
+              Publish
+            </button>
           </div>
         </section>
       </AnimationWrapper>
