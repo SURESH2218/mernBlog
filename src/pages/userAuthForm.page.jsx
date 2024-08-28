@@ -14,8 +14,9 @@ let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
 
 const UserAuthForm = ({ type }) => {
   let { userAuth, setUserAuth } = useContext(UserContext);
+  console.log(userAuth);
 
-  // console.log(userAuth);
+  console.log(userAuth?.data?.accessToken);
 
   const userAuthThroughServer = async (serverRoute, formData) => {
     try {
@@ -74,7 +75,7 @@ const UserAuthForm = ({ type }) => {
       };
       userAuthThroughServer(serverRoute, formData);
     } catch (error) {
-      toast.error("trouble loginw ith google");
+      toast.error("trouble login with google");
       console.log(error);
     }
   };

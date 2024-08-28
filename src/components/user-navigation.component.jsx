@@ -8,7 +8,9 @@ const UserNavigationPanel = () => {
   const { userAuth, setUserAuth } = useContext(UserContext);
   // console.log(userAuth);
 
-  const username = userAuth?.data?.user?.personal_info?.username;
+  const username =
+    userAuth?.data?.user?.personal_info?.username ||
+    userAuth?.message?.user?.personal_info?.username;
   const email = userAuth?.data?.user?.personal_info?.email;
 
   const signOutUser = () => {

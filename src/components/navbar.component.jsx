@@ -11,7 +11,7 @@ const Navbar = () => {
   };
 
   const { userAuth } = useContext(UserContext);
-  // console.log(userAuth?.data?.user?.personal_info?.profile_img);
+  console.log(userAuth);
   return (
     <>
       <nav className="navbar">
@@ -55,7 +55,6 @@ const Navbar = () => {
                   <i className="fi fi-rr-bell"></i>
                 </button>
               </Link>
-
               <div
                 className="relative"
                 onClick={handleUserNavPanel}
@@ -68,7 +67,10 @@ const Navbar = () => {
                 <button className="w-12 h-12 mt-1">
                   <img
                     className="w-full h-full object-cover rounded-full mt-1"
-                    src={userAuth?.data?.user?.personal_info?.profile_img}
+                    src={
+                      userAuth?.data?.user?.personal_info?.profile_img ||
+                      userAuth?.message?.user?.personal_info?.profile_img
+                    }
                     alt="profile"
                   />
                 </button>
