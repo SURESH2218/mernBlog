@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../imgs/logo.png";
 import AnimationWrapper from "../common/page-animation";
 import defaultBanner from "../imgs/blog banner.png";
@@ -8,8 +8,14 @@ import { Toaster, toast } from "react-hot-toast";
 import { Editorcontext } from "../pages/editor.pages";
 import EditorJS from "@editorjs/editorjs";
 import { tools } from "./tools.component";
+import { UserContext } from "../App";
+import axios from "axios";
 
 const BlogEditor = () => {
+  let { userAuth } = useContext(UserContext);
+  // console.log(userAuth);
+
+  let accessToken = userAuth?.data?.accessToken;
   let {
     blog,
     blog: { title, banner, content, tags, author, desc },
@@ -19,6 +25,8 @@ const BlogEditor = () => {
     setEditorState,
     setTextEditor,
   } = useContext(Editorcontext);
+
+  let navigate = useNavigate();
 
   useEffect(() => {
     setTextEditor(
@@ -88,6 +96,77 @@ const BlogEditor = () => {
     }
   };
 
+  const handleSaveDraft = async (e) => {
+    if (e.target.className.includes("disable")) {
+      return;
+    }
+
+    if (!title.length) {
+      return toast.error("Write blog title before saving it as a draft");
+    }
+
+    let loadinToast = toast.loading("Saving Draft....");
+    e.target.classList.add("disable");
+
+    if (!textEditor.isReady) {
+      toast.dismiss(loadinToast);
+      e.target.classList.remove("disable");
+      return toast.error("Text editor is not ready");
+    }
+
+    let content;
+    try {
+      content = await textEditor.save();
+    } catch (error) {
+      console.error("Error saving content from text editor:", error); // Log detailed error
+      toast.dismiss(loadinToast);
+      e.target.classList.remove("disable");
+      return toast.error("Failed to save content");
+    }
+
+    let blogObj = {
+      title,
+      banner,
+      desc,
+      tags,
+      content,
+      draft: true,
+    };
+
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_SERVER_DOMAIN}/create-blog`,
+        blogObj,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      toast.dismiss(loadinToast);
+      toast.success("Draft saved 👍");
+      setTimeout(() => {
+        navigate("/");
+      }, 500);
+    } catch (error) {
+      console.error("Error during blog draft save:", error); // Log full error
+      e.target.classList.remove("disable");
+      toast.dismiss(loadinToast);
+
+      let errorMessage = "An error occurred";
+      if (error.response) {
+        errorMessage =
+          error.response.data?.error ||
+          error.response.data?.message ||
+          errorMessage;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      return toast.error(errorMessage);
+    }
+  };
+
   return (
     <React.Fragment>
       <div className="no-scrollbar overflow-auto h-screen">
@@ -102,7 +181,9 @@ const BlogEditor = () => {
             <button className="btn-dark py-2" onClick={handlePublish}>
               Publish
             </button>
-            <button className="btn-light py-2">Save Draft</button>
+            <button className="btn-light py-2" onClick={handleSaveDraft}>
+              Save Draft
+            </button>
           </div>
         </nav>
         <Toaster />

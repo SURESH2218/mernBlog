@@ -11,7 +11,7 @@ const Navbar = () => {
   };
 
   const { userAuth } = useContext(UserContext);
-  console.log(userAuth);
+  // console.log(userAuth);
   return (
     <>
       <nav className="navbar">
