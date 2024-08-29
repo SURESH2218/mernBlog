@@ -34,9 +34,11 @@ const BlogPostCard = ({ content, author }) => {
           {desc}
         </p>
         <div className="flex gap-4 mt-7">
-          <span className="btn-light py-1 px-4 flex gap-5">
+          <span className="flex gap-3 overflow-x-scroll no-scrollbar max-w-[250px] sm:max-w-full">
             {tags.map((tag, index) => (
-              <div key={index}>{tag}</div>
+              <div key={index} className="m-1 btn-light py-1 px-4 ">
+                {tag}
+              </div>
             ))}
           </span>
           <span className="flex ml-3 items-center gap-2 text-dark-grey">
