@@ -42,9 +42,6 @@ const HomePage = () => {
         page,
         countRoute: "/all-latest-blogs-count",
       });
-
-      console.log(formateData, "formatted data");
-
       setBlogs(formateData);
     } catch (error) {
       console.error("Error fetching latest blogs:", error);
@@ -65,8 +62,6 @@ const HomePage = () => {
         data_to_send: { tag: pageState },
       });
 
-      console.log(formateData, "formatted data");
-
       setBlogs(formateData);
     } catch (error) {
       console.log(error);
@@ -79,7 +74,7 @@ const HomePage = () => {
         import.meta.env.VITE_SERVER_DOMAIN + "/trending-blogs"
       );
       setTrendingBlogs(data?.blogs);
-      console.log(data.blogs);
+      // console.log(data.blogs);
     } catch (error) {
       console.log(error);
     }
@@ -136,7 +131,12 @@ const HomePage = () => {
                   );
                 })
               )}
-              <LoadMoreDataBtn state={blogs} fetchDataFun={fetchLatestBlogs} />
+              <LoadMoreDataBtn
+                state={blogs}
+                fetchDataFun={
+                  pageState == "home" ? fetchLatestBlogs : fetchBlogsbyCategory
+                }
+              />
             </>
 
             {trendingBlogs == null ? (
