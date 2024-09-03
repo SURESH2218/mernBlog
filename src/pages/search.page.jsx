@@ -8,6 +8,7 @@ import Loader from "../components/loader.component";
 import axios from "axios";
 import filterPaginationData from "../common/filter-pagination-data";
 import BlogPostCard from "../components/blog-post.component";
+import UserCard from "../components/usercard.component";
 
 const SearchPage = () => {
   let { query } = useParams();
@@ -38,7 +39,7 @@ const SearchPage = () => {
   const fetchUsers = async () => {
     let {
       data: { users },
-    } = axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/search-users", {
+    } = await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/search-users", {
       query,
     });
     setUsers(users);
@@ -53,6 +54,29 @@ const SearchPage = () => {
   const resetState = () => {
     setBlogs(null);
     setUsers(null);
+  };
+
+  const UserCardWrapper = () => {
+    return (
+      <>
+        {users == null ? (
+          <Loader />
+        ) : users?.length ? (
+          users?.map((user, index) => {
+            return (
+              <AnimationWrapper
+                key={index}
+                transition={{ duration: 1, delay: index * 0.08 }}
+              >
+                <UserCard user={user} />
+              </AnimationWrapper>
+            );
+          })
+        ) : (
+          <NoDataMessage message="No user found" />
+        )}
+      </>
+    );
   };
 
   return (
@@ -84,7 +108,14 @@ const SearchPage = () => {
             )}
             <LoadMoreDataBtn state={blogs} fetchDataFun={searchBlogs} />
           </>
+          <UserCardWrapper />
         </InpageNavigation>
+      </div>
+      <div className="min-w-[40%] lg:min-w-[350px] max-w-min border-l border-grey pl-8 pt-3 max-md:hidden">
+        <h1 className="font-medium text-xl mb-8">
+          User related to search<i className="fi fi-rr-user ml-4 mt-1"></i>
+        </h1>
+        <UserCardWrapper />
       </div>
     </section>
   );
