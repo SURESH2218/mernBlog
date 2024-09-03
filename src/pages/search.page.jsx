@@ -7,6 +7,7 @@ import LoadMoreDataBtn from "../components/load-more.component";
 import Loader from "../components/loader.component";
 import axios from "axios";
 import filterPaginationData from "../common/filter-pagination-data";
+import BlogPostCard from "../components/blog-post.component";
 
 const SearchPage = () => {
   let { query } = useParams();
@@ -14,8 +15,8 @@ const SearchPage = () => {
   const searchBlogs = async ({ page = 1, create_new_arr = false }) => {
     try {
       const { data } = await axios.post(
-        `${import.meta.env.VITE_SERVER_DOMAIN}/latest-blogs`,
-        { page }
+        `${import.meta.env.VITE_SERVER_DOMAIN}/search-blogs`,
+        { query, page }
       );
 
       let formateData = await filterPaginationData({
@@ -23,16 +24,20 @@ const SearchPage = () => {
         data: data.blogs,
         page,
         countRoute: "/search-blogs-count",
-        data_to_send: {query},
-        create_new_array: create_new_arr,
+        data_to_send: { query },
+        create_new_arr,
       });
       setBlogs(formateData);
+      console.log(formateData);
     } catch (error) {
       console.error("Error fetching latest blogs:", error);
     }
   };
 
- 
+  useEffect(() => {
+    searchBlogs({ page: 1 });
+  }, [query]);
+
   return (
     <section className="h-cover flex justify-center gap-10">
       <div className="w-full">
