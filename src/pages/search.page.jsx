@@ -12,6 +12,7 @@ import BlogPostCard from "../components/blog-post.component";
 const SearchPage = () => {
   let { query } = useParams();
   const [blogs, setBlogs] = useState(null);
+  const [users, setUsers] = useState(null);
   const searchBlogs = async ({ page = 1, create_new_arr = false }) => {
     try {
       const { data } = await axios.post(
@@ -34,9 +35,25 @@ const SearchPage = () => {
     }
   };
 
+  const fetchUsers = async () => {
+    let {
+      data: { users },
+    } = axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/search-users", {
+      query,
+    });
+    setUsers(users);
+  };
+
   useEffect(() => {
-    searchBlogs({ page: 1 });
+    resetState();
+    searchBlogs({ page: 1, create_new_arr: true });
+    fetchUsers();
   }, [query]);
+
+  const resetState = () => {
+    setBlogs(null);
+    setUsers(null);
+  };
 
   return (
     <section className="h-cover flex justify-center gap-10">
@@ -65,12 +82,7 @@ const SearchPage = () => {
                 );
               })
             )}
-            {/* <LoadMoreDataBtn
-              state={blogs}
-              fetchDataFun={
-                pageState == "home" ? fetchLatestBlogs : fetchBlogsbyCategory
-              }
-            /> */}
+            <LoadMoreDataBtn state={blogs} fetchDataFun={searchBlogs} />
           </>
         </InpageNavigation>
       </div>
